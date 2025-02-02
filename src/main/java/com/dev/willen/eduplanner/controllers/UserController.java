@@ -1,6 +1,7 @@
 package com.dev.willen.eduplanner.controllers;
 
 import com.dev.willen.eduplanner.dto.CreateUserDto;
+import com.dev.willen.eduplanner.dto.LoginDto;
 import com.dev.willen.eduplanner.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,12 @@ public class UserController {
     public ResponseEntity<Void> registeUser(@RequestBody CreateUserDto userRequest) {
         userService.registerUser(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/signIn")
+    public ResponseEntity<Void> signIn(@RequestBody LoginDto userRequest) {
+        String response = userService.signIn(userRequest);
+        return ResponseEntity.status(HttpStatus.OK).header("toke_response", response)
+                .build();
     }
 }

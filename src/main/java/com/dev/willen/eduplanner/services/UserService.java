@@ -1,13 +1,24 @@
 package com.dev.willen.eduplanner.services;
 
 import com.dev.willen.eduplanner.dto.CreateUserDto;
+import com.dev.willen.eduplanner.dto.LoginDto;
 import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.enums.Role;
 import com.dev.willen.eduplanner.exceptions.DuplicatedUser;
 import com.dev.willen.eduplanner.repositories.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Service
 public class UserService {
@@ -15,11 +26,16 @@ public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
+    private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, AuthorityService authorityService) {
+    @Value("${jwt.secret.key}")
+    private String JWT_SECRET;
+
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, AuthorityService authorityService, AuthenticationManager authenticationManager) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.authorityService = authorityService;
+        this.authenticationManager = authenticationManager;
     }
 
     public void registerUser(CreateUserDto userDto) {
@@ -38,5 +54,31 @@ public class UserService {
         userEntity.setPassword(passwordEncoder.encode(userDto.password()));
 
         repository.save(userEntity);
+    }
+
+    public String signIn(LoginDto userRequest) {
+        String jwt = "";
+        Authentication authentication = UsernamePasswordAuthenticationToken
+                .unauthenticated(userRequest.email(), userRequest.password());
+        Authentication authenticationResponse = authenticationManager.authenticate(authentication);
+        // Fluxo para autenticação bem sucedida
+        if (authenticationResponse != null && authenticationResponse.isAuthenticated()) {
+            jwt = generateToken(authenticationResponse);
+        }
+
+        return jwt;
+    }
+
+    private String generateToken(Authentication authentication) {
+        String secret = JWT_SECRET;
+        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        String jwt = Jwts.builder()
+                .issuer("Eazy Bank")
+                .subject("JWT token")
+                .claim("username", authentication.getName())
+                .issuedAt(new Date())
+                .expiration(new Date((new Date()).getTime() + 30000000))
+                .signWith(secretKey).compact();
+        return jwt;
     }
 }
