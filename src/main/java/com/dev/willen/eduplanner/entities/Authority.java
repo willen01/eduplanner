@@ -2,6 +2,8 @@ package com.dev.willen.eduplanner.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "tb_authorities")
 public class Authority {
@@ -11,9 +13,8 @@ public class Authority {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User user;
+    @ManyToMany(mappedBy = "authorities")
+    private Set<User> users;
 
     public Authority() {
     }
@@ -39,11 +40,11 @@ public class Authority {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }
