@@ -1,10 +1,12 @@
 package com.dev.willen.eduplanner.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_user")
@@ -27,6 +29,10 @@ public class User {
 
     @UpdateTimestamp
     private Date UpatedAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Authority> authorities;
 
     public User() {
     }
@@ -96,5 +102,13 @@ public class User {
 
     public void setUpatedAt(Date upatedAt) {
         UpatedAt = upatedAt;
+    }
+
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 }
