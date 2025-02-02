@@ -6,6 +6,7 @@ import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.enums.Role;
 import com.dev.willen.eduplanner.exceptions.DuplicatedUser;
+import com.dev.willen.eduplanner.exceptions.UserNotFoundException;
 import com.dev.willen.eduplanner.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -80,5 +81,9 @@ public class UserService {
                 .expiration(new Date((new Date()).getTime() + 30000000))
                 .signWith(secretKey).compact();
         return jwt;
+    }
+
+    public User getUserByEmail(String userEmail) {
+        return repository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
     }
 }
