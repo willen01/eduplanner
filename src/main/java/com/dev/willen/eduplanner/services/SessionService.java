@@ -4,6 +4,7 @@ import com.dev.willen.eduplanner.dto.SaveSessionDto;
 import com.dev.willen.eduplanner.entities.Session;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Topic;
+import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.repositories.SessionRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,20 @@ public class SessionService {
     private final SubjectService subjectService;
     private final TopicService topicService;
     private final SessionRepository repository;
+    private final UserService userService;
 
-    public SessionService(SubjectService subjectService, TopicService topicService, SessionRepository repository) {
+    public SessionService(SubjectService subjectService, TopicService topicService, SessionRepository repository, UserService userService) {
         this.subjectService = subjectService;
         this.topicService = topicService;
         this.repository = repository;
+        this.userService = userService;
     }
 
-    public void saveSession(SaveSessionDto sessionDto) {
+    public void saveSession(SaveSessionDto sessionDto, String userEmail) {
 
         Subject subject = subjectService.getSubjectById(sessionDto.SubjectId());
         Topic topic = topicService.getTopicById(sessionDto.topicId());
+        User user = userService.getUserByEmail(userEmail);
 
         Session session = new Session();
         session.setSubject(subject);
@@ -35,6 +39,7 @@ public class SessionService {
         Instant now = Instant.now();
         session.setDaysToReview(sessionDto.daysToReview());
         session.setReviewIn(now.plus(sessionDto.daysToReview(), ChronoUnit.DAYS));
+        session.setUser(user);
 
         repository.save(session);
     }
