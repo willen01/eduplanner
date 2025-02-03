@@ -6,20 +6,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-import java.util.Set;
 
 @Entity
-@Table(name = "tb_subject")
-public class Subject {
+@Table(name = "tb_topic")
+public class Topic {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Integer id;
 
     private String name;
 
@@ -29,28 +28,25 @@ public class Subject {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
-    @OneToMany(mappedBy = "subject")
-    private Set<Topic> topics;
-
-    public Subject() {
+    public Topic() {
     }
 
-    public Subject(int id, String name, Date createdAt, Date updatedAt) {
+    public Topic(Integer id, String name, Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -78,19 +74,11 @@ public class Subject {
         this.updatedAt = updatedAt;
     }
 
-    public User getUser() {
-        return user;
+    public Subject getSubject() {
+        return subject;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Topic> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(Set<Topic> topics) {
-        this.topics = topics;
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 }
