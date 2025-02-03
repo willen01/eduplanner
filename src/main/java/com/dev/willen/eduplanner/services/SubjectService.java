@@ -32,9 +32,7 @@ public class SubjectService {
 
     public void removeSubject(int subjectId, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
-        Subject subject = repository.findById(subjectId).orElseThrow(() -> {
-            throw new EntityNotFoundException("Subject with id: " + subjectId + " not found!");
-        });
+        Subject subject = getSubjectById(subjectId);
 
         if (user.getId() != subject.getUser().getId()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to perform this operation");
@@ -43,4 +41,14 @@ public class SubjectService {
         repository.deleteById(subject.getId());
     }
 
+    public Subject getSubjectById(int subjectId) {
+        return repository.findById(subjectId)
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("Subject with id: " + subjectId + " not found!");
+                });
+    }
+
+    public boolean existsSubjectByUser(Integer subjectId, Integer userId) {
+        return repository.existsByIdAndUserId(subjectId, userId);
+    }
 }
