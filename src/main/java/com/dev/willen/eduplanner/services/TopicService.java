@@ -5,6 +5,7 @@ import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Topic;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.repositories.TopicRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,4 +46,9 @@ public class TopicService {
         repository.save(topic);
     }
 
+    public Topic getTopicById(Integer topicId) {
+        return repository.findById(topicId).orElseThrow(() -> {
+            throw new EntityNotFoundException("Topic not found");
+        });
+    }
 }
