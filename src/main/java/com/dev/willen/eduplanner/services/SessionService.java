@@ -33,7 +33,8 @@ public class SessionService {
         session.setTopic(topic);
 
         Instant now = Instant.now();
-        session.setReviewIn(now.plus(sessionDto.reviewIn(), ChronoUnit.DAYS));
+        session.setDaysToReview(sessionDto.daysToReview());
+        session.setReviewIn(now.plus(sessionDto.daysToReview(), ChronoUnit.DAYS));
 
         repository.save(session);
     }

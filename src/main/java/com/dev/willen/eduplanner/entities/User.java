@@ -43,6 +43,9 @@ public class User {
     @JsonIgnore
     private Set<Subject> subjects;
 
+    @OneToMany(mappedBy = "user")
+    private Set<Session> sessions;
+
     public User() {
     }
 
@@ -127,5 +130,13 @@ public class User {
 
     public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
+    }
+
+    public Set<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(Set<Session> sessions) {
+        this.sessions = sessions;
     }
 }

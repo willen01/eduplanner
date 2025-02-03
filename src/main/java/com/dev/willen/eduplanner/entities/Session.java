@@ -32,15 +32,22 @@ public class Session {
 
     private Instant reviewIn;
 
+    private int daysToReview;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Session() {
     }
 
-    public Session(Integer id, Subject subject, Topic topic, Instant createdAt, Instant reviewIn) {
+    public Session(Integer id, Subject subject, Topic topic, Instant createdAt, Instant reviewIn, int daysToReview) {
         this.id = id;
         this.subject = subject;
         this.topic = topic;
         this.createdAt = createdAt;
         this.reviewIn = reviewIn;
+        this.daysToReview = daysToReview;
     }
 
     public Integer getId() {
@@ -81,5 +88,21 @@ public class Session {
 
     public void setReviewIn(Instant reviewIn) {
         this.reviewIn = reviewIn;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public int getDaysToReview() {
+        return daysToReview;
+    }
+
+    public void setDaysToReview(int daysToReview) {
+        this.daysToReview = daysToReview;
     }
 }
