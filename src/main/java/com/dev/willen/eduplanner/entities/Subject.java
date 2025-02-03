@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +36,9 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject")
     private Set<Topic> topics;
+
+    @OneToMany(mappedBy = "subject")
+    private List<Session> sessions;
 
     public Subject() {
     }
@@ -92,5 +96,13 @@ public class Subject {
 
     public void setTopics(Set<Topic> topics) {
         this.topics = topics;
+    }
+
+    public List<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<Session> sessions) {
+        this.sessions = sessions;
     }
 }

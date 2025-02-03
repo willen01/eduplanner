@@ -6,11 +6,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_topic")
@@ -31,6 +33,9 @@ public class Topic {
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private Subject subject;
+
+    @OneToMany(mappedBy = "topic")
+    private List<Session> sessions;
 
     public Topic() {
     }
@@ -80,5 +85,13 @@ public class Topic {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public List<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<Session> sessions) {
+        this.sessions = sessions;
     }
 }
