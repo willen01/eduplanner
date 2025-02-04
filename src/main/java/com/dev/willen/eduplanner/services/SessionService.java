@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class SessionService {
@@ -42,6 +43,11 @@ public class SessionService {
         session.setUser(user);
 
         repository.save(session);
+    }
+
+    public List<Session> getAllSessions(String useEmail) {
+        User user = userService.getUserByEmail(useEmail);
+        return repository.findByUserId(user.getId());
     }
 
 }
