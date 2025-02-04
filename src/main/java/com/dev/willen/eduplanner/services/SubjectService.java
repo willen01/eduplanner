@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class SubjectService {
 
@@ -50,5 +52,10 @@ public class SubjectService {
 
     public boolean existsSubjectByUser(Integer subjectId, Integer userId) {
         return repository.existsByIdAndUserId(subjectId, userId);
+    }
+
+    public List<Subject> getAllSubjects(String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
+        return repository.findAllByUserId(user.getId());
     }
 }
