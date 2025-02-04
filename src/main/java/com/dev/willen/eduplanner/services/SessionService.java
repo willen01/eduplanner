@@ -72,4 +72,14 @@ public class SessionService {
         repository.save(session);
     }
 
+    public void removeSession(int sessionId, String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
+
+        boolean matchWithUser = repository.existsByIdAndUserId(sessionId, user.getId());
+        if (!matchWithUser) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to perform this operation");
+        }
+        repository.deleteById(sessionId);
+    }
+
 }

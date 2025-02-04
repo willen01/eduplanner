@@ -1,19 +1,14 @@
 package com.dev.willen.eduplanner.controllers;
 
-import com.dev.willen.eduplanner.dto.SaveSessionDto;
 import com.dev.willen.eduplanner.dto.SaveSession;
+import com.dev.willen.eduplanner.dto.SaveSessionDto;
 import com.dev.willen.eduplanner.entities.Session;
 import com.dev.willen.eduplanner.services.SessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +39,13 @@ public class SessionController {
     public ResponseEntity<Void> editSession(@RequestBody SaveSession request,
                                             @AuthenticationPrincipal UserDetails userDetails) {
         service.editSession(request.sessionId(), userDetails.getUsername(), request.daysToReview());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<Void> removeSession(@PathVariable("id") int sessionId,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        service.removeSession(sessionId, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
