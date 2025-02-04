@@ -1,8 +1,10 @@
 package com.dev.willen.eduplanner.controllers;
 
 import com.dev.willen.eduplanner.dto.CreateSubjectDto;
+import com.dev.willen.eduplanner.dto.SubjectResponse;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.services.SubjectService;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,4 +47,13 @@ public class SubjectController {
         List<Subject> subjects = subjectService.getAllSubjects(userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(subjects);
     }
+
+    @GetMapping("/findById/{id}")
+    public ResponseEntity<SubjectResponse> getSubjectById(@PathVariable("id") int id) {
+        Subject subject = subjectService.getSubjectById(id);
+        SubjectResponse subjectResponse = new SubjectResponse(subject.getId(), subject.getName(), subject.getCreatedAt(), subject.getTopics());
+
+        return ResponseEntity.status(HttpStatus.OK).body(subjectResponse);
+    }
+
 }
