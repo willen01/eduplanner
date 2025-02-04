@@ -1,5 +1,6 @@
 package com.dev.willen.eduplanner.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,12 +33,15 @@ public class Subject {
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "subject")
+    @JsonIgnore
     private Set<Topic> topics;
 
     @OneToMany(mappedBy = "subject")
+    @JsonIgnore
     private List<Session> sessions;
 
     public Subject() {
