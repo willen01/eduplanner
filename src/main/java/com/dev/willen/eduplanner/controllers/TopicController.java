@@ -1,15 +1,14 @@
 package com.dev.willen.eduplanner.controllers;
 
 import com.dev.willen.eduplanner.dto.SaveTopicDto;
+import com.dev.willen.eduplanner.dto.TopicResponse;
+import com.dev.willen.eduplanner.entities.Topic;
 import com.dev.willen.eduplanner.services.TopicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/topics")
@@ -26,5 +25,12 @@ public class TopicController {
                                               @AuthenticationPrincipal UserDetails userDetails) {
         topicService.saveTopic(topicRequest, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/findById/{topicId}")
+    public ResponseEntity<TopicResponse> getById(@PathVariable(value = "topicId") int topicId) {
+        Topic topic = topicService.getTopicById(topicId);
+        TopicResponse response = new TopicResponse(topic.getName(), topic.getUpdatedAt(), topic.getSubject().getName());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
