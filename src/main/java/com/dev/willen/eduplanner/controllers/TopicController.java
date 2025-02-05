@@ -33,4 +33,10 @@ public class TopicController {
         TopicResponse response = new TopicResponse(topic.getName(), topic.getUpdatedAt(), topic.getSubject().getName());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @DeleteMapping("/remove/{topicId}")
+    public ResponseEntity<Void> removeTopic(@PathVariable(name = "topicId") int topicId) {
+        topicService.removeTopic(topicId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

@@ -51,4 +51,8 @@ public class TopicService {
             throw new EntityNotFoundException("Topic not found");
         });
     }
+
+    public void removeTopic(int topicId) {
+        repository.deleteById(topicId);
+    }
 }
