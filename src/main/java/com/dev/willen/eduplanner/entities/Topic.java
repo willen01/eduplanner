@@ -38,7 +38,7 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic")
     @JsonIgnore
-    private List<Session> sessions;
+    private List<Review> reviews;
 
     @OneToMany(mappedBy = "topic")
     @JsonIgnore
@@ -98,11 +98,11 @@ public class Topic {
         this.subject = subject;
     }
 
-    public List<Session> getSessions() {
-        return sessions;
+    public List<Review> getReviews() {
+        return reviews;
     }
 
-    public void setSessions(List<Session> sessions) {
-        this.sessions = sessions;
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

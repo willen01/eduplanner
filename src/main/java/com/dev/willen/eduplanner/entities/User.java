@@ -45,7 +45,7 @@ public class User {
     private Set<Subject> subjects;
 
     @OneToMany(mappedBy = "user")
-    private Set<Session> sessions;
+    private Set<Review> reviews;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
@@ -141,11 +141,11 @@ public class User {
         this.subjects = subjects;
     }
 
-    public Set<Session> getSessions() {
-        return sessions;
+    public Set<Review> getReviews() {
+        return reviews;
     }
 
-    public void setSessions(Set<Session> sessions) {
-        this.sessions = sessions;
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
     }
 }

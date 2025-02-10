@@ -13,8 +13,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "tb_session")
-public class Session {
+@Table(name = "tb_review")
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,10 +40,10 @@ public class Session {
     @JsonIgnore
     private User user;
 
-    public Session() {
+    public Review() {
     }
 
-    public Session(Integer id, Subject subject, Topic topic, Instant createdAt, Instant reviewIn, int daysToReview) {
+    public Review(Integer id, Subject subject, Topic topic, Instant createdAt, Instant reviewIn, int daysToReview) {
         this.id = id;
         this.subject = subject;
         this.topic = topic;

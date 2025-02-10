@@ -6,7 +6,6 @@ import com.dev.willen.eduplanner.entities.Timer;
 import com.dev.willen.eduplanner.entities.Topic;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.repositories.TimerRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
