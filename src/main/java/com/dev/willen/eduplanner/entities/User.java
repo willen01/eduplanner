@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -45,6 +46,14 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Session> sessions;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Exercise> exercises;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Timer> timers;
 
     public User() {
     }

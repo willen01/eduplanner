@@ -40,6 +40,14 @@ public class Topic {
     @JsonIgnore
     private List<Session> sessions;
 
+    @OneToMany(mappedBy = "topic")
+    @JsonIgnore
+    private List<Exercise> exercises;
+
+    @OneToMany(mappedBy = "topic")
+    @JsonIgnore
+    private List<Timer> timers;
+
     public Topic() {
     }
 
