@@ -50,7 +50,7 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject")
     @JsonIgnore
-    private List<Timer> timers;
+    private List<Session> sessions;
 
     public Subject() {
     }

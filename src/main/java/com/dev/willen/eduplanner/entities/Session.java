@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "tb_timer")
-public class Timer {
+@Table(name = "tb_session")
+public class Session {
 
 
     @Id
@@ -18,6 +18,7 @@ public class Timer {
 
     @Column(name = "endTime")
     private LocalTime end;
+
     private LocalTime total;
 
     @ManyToOne
@@ -32,10 +33,10 @@ public class Timer {
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
-    public Timer() {
+    public Session() {
     }
 
-    public Timer(Integer id, LocalTime start, LocalTime end, LocalTime total, User user, Subject subject, Topic topic) {
+    public Session(Integer id, LocalTime start, LocalTime end, LocalTime total, User user, Subject subject, Topic topic) {
         this.id = id;
         this.start = start;
         this.end = end;

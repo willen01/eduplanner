@@ -53,7 +53,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private List<Timer> timers;
+    private List<Session> sessions;
 
     public User() {
     }

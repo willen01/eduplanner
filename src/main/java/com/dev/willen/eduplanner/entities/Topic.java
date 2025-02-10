@@ -46,7 +46,7 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic")
     @JsonIgnore
-    private List<Timer> timers;
+    private List<Session> sessions;
 
     public Topic() {
     }
