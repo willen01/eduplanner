@@ -44,6 +44,14 @@ public class Subject {
     @JsonIgnore
     private List<Session> sessions;
 
+    @OneToMany(mappedBy = "subject")
+    @JsonIgnore
+    private List<Exercise> excercises;
+
+    @OneToMany(mappedBy = "subject")
+    @JsonIgnore
+    private List<Timer> timers;
+
     public Subject() {
     }
 
