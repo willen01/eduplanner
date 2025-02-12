@@ -1,8 +1,6 @@
 package com.dev.willen.eduplanner.services;
 
-import com.dev.willen.eduplanner.dto.ExerciseResponse;
-import com.dev.willen.eduplanner.dto.SaveExerciseDto;
-import com.dev.willen.eduplanner.dto.UpdateExerciseDto;
+import com.dev.willen.eduplanner.dto.*;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Topic;
@@ -48,7 +46,7 @@ public class ExerciseService {
         List<Exercise> all = repository.findAllByUserId(user.getId());
 
         List<ExerciseResponse> exerciseResponse = all.stream().map(exercise -> {
-            int totalAnswers = exercise.getCorrectAnswers() + exercise.getWrongAnsweres();
+            int totalAnswers = exercise.getCorrectAnswers() + exercise.getWrongAnswers();
             double totalPerformance = (double) exercise.getCorrectAnswers() / totalAnswers;
             double finalTotalPerformance = truncateDecimal(totalPerformance, 4) * 100;
 
@@ -88,6 +86,60 @@ public class ExerciseService {
         }
 
         repository.save(exercise);
+    }
+
+    public RankingExerciseResponse getRanking(String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
+        List<Exercise> hightPerformance = repository.findHightPerformance(user.getId());
+        List<Exercise> lowPerformance = repository.findLowPerformance(user.getId());
+
+        if (hightPerformance.isEmpty() && lowPerformance.isEmpty()) {
+            new RankingExerciseResponse( null, null);
+        }
+
+        List<HightPerformanceDto> hightPerformanceList = hightPerformance.
+                stream()
+                .map(exercise -> new HightPerformanceDto(exercise.getSubject().getName(),
+                        exercise.getTopic().getName(),
+                        exercise.getCorrectAnswers()))
+                .toList();
+
+        List<LowPerformanceDto> lowPerformanceList = lowPerformance
+                .stream()
+                .map(exercise -> new LowPerformanceDto(
+                        exercise.getSubject().getName(),
+                        exercise.getTopic().getName(),
+                        exercise.getWrongAnswers()
+                )).toList();
+
+       return new RankingExerciseResponse(hightPerformanceList, lowPerformanceList);
+    }
+
+    public RankingExerciseResponse getRanking(String userEmail, int limit) {
+        User user = userService.getUserByEmail(userEmail);
+        List<Exercise> hightPerformance = repository.findHightPerformance(user.getId(), limit);
+        List<Exercise> lowPerformance = repository.findLowPerformance(user.getId(), limit);
+
+        if (hightPerformance.isEmpty() && lowPerformance.isEmpty()) {
+            new RankingExerciseResponse( null, null);
+        }
+
+        List<HightPerformanceDto> hightPerformanceList = hightPerformance.
+                stream()
+                .map(exercise -> new HightPerformanceDto(exercise.getSubject().getName(),
+                        exercise.getTopic().getName(),
+                        exercise.getCorrectAnswers()))
+                .toList();
+
+        List<LowPerformanceDto> lowPerformanceList = lowPerformance
+                .stream()
+                .map(exercise -> new LowPerformanceDto(
+                        exercise.getSubject().getName(),
+                        exercise.getTopic().getName(),
+                        exercise.getWrongAnswers()
+                )).toList();
+
+        return new RankingExerciseResponse(hightPerformanceList, lowPerformanceList);
     }
 
     private double truncateDecimal(double value, int decimalPlaces) {

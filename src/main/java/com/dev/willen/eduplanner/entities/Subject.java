@@ -46,7 +46,7 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject")
     @JsonIgnore
-    private List<Exercise> excercises;
+    private List<Exercise> exercises;
 
     @OneToMany(mappedBy = "subject")
     @JsonIgnore

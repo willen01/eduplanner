@@ -1,8 +1,11 @@
 package com.dev.willen.eduplanner.services;
 
 import com.dev.willen.eduplanner.dto.CreateUserDto;
+import com.dev.willen.eduplanner.dto.InfoUserResponse;
 import com.dev.willen.eduplanner.dto.LoginDto;
+import com.dev.willen.eduplanner.dto.RankingExerciseResponse;
 import com.dev.willen.eduplanner.entities.Authority;
+import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.enums.Role;
 import com.dev.willen.eduplanner.exceptions.DuplicatedUser;
@@ -11,6 +14,7 @@ import com.dev.willen.eduplanner.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,15 +31,17 @@ public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
+    private final ExerciseService exerciseService;
     private final AuthenticationManager authenticationManager;
 
     @Value("${jwt.secret.key}")
     private String JWT_SECRET;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, AuthorityService authorityService, AuthenticationManager authenticationManager) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, AuthorityService authorityService, @Lazy ExerciseService exerciseService, AuthenticationManager authenticationManager) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.authorityService = authorityService;
+        this.exerciseService = exerciseService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -85,5 +91,26 @@ public class UserService {
 
     public User getUserByEmail(String userEmail) {
         return repository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
+    }
+
+
+    public InfoUserResponse infoUser(String userEmail) {
+        User user = getUserByEmail(userEmail);
+
+        int globalAnswers = user.getExercises()
+                .stream()
+                .mapToInt(exercise -> exercise.getCorrectAnswers() + exercise.getWrongAnswers())
+                .sum();
+
+        int globalCorrectAnswers = user.getExercises().stream()
+                .mapToInt(Exercise::getCorrectAnswers)
+                .sum();
+
+        int globalWrongAnswers =  user.getExercises().stream()
+                .mapToInt(Exercise::getWrongAnswers)
+                .sum();
+        RankingExerciseResponse rankingPerformance = exerciseService.getRanking(userEmail, 1);
+
+        return new InfoUserResponse(globalAnswers, globalCorrectAnswers, globalWrongAnswers, rankingPerformance);
     }
 }

@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "tb_excercise")
+@Table(name = "tb_exercise")
 public class Exercise {
 
     @Id
@@ -74,10 +74,6 @@ public class Exercise {
 
     public void setCorrectAnswers(int correctAnswers) {
         this.correctAnswers = correctAnswers;
-    }
-
-    public int getWrongAnsweres() {
-        return wrongAnswers;
     }
 
     public void setWrongAnsweres(int wrongAnswers) {

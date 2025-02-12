@@ -148,4 +148,12 @@ public class User {
     public void setReviews(Set<Review> reviews) {
         this.reviews = reviews;
     }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
+    }
 }

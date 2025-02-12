@@ -1,10 +1,14 @@
 package com.dev.willen.eduplanner.controllers;
 
 import com.dev.willen.eduplanner.dto.CreateUserDto;
+import com.dev.willen.eduplanner.dto.InfoUserResponse;
 import com.dev.willen.eduplanner.dto.LoginDto;
 import com.dev.willen.eduplanner.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +35,11 @@ public class UserController {
         String response = userService.signIn(userRequest);
         return ResponseEntity.status(HttpStatus.OK).header("toke_response", response)
                 .build();
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<InfoUserResponse> infoResponse(@AuthenticationPrincipal UserDetails userDetails) {
+        InfoUserResponse response = userService.infoUser(userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
