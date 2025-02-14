@@ -1,6 +1,11 @@
 package com.dev.willen.eduplanner.services;
 
-import com.dev.willen.eduplanner.dto.*;
+import com.dev.willen.eduplanner.dto.ExerciseResponse;
+import com.dev.willen.eduplanner.dto.RateInfo;
+import com.dev.willen.eduplanner.dto.RateResponse;
+import com.dev.willen.eduplanner.dto.SaveExerciseDto;
+import com.dev.willen.eduplanner.dto.TopicInfo;
+import com.dev.willen.eduplanner.dto.UpdateExerciseDto;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Topic;
@@ -9,6 +14,8 @@ import com.dev.willen.eduplanner.repositories.ExerciseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -26,7 +33,7 @@ public class ExerciseService {
         this.subjectService = subjectService;
     }
 
-    public void saveExercice(SaveExerciseDto exerciseDto, String userEmail) {
+    public void saveExercise(SaveExerciseDto exerciseDto, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
         Subject subject = subjectService.getSubjectById(exerciseDto.subjectId());
         Topic topic = topicService.getTopicById(exerciseDto.topicId());
@@ -41,14 +48,14 @@ public class ExerciseService {
         repository.save(exercise);
     }
 
-    public List<ExerciseResponse> getAllExercices(String userEmail) {
+    public List<ExerciseResponse> getAllExercises(String userEmail) {
         User user = userService.getUserByEmail(userEmail);
-        List<Exercise> all = repository.findAllByUserId(user.getId());
+        List<Exercise> exercises = repository.findAllByUserId(user.getId());
 
-        List<ExerciseResponse> exerciseResponse = all.stream().map(exercise -> {
+        List<ExerciseResponse> exerciseResponse = exercises.stream().map(exercise -> {
             int totalAnswers = exercise.getCorrectAnswers() + exercise.getWrongAnswers();
             double totalPerformance = (double) exercise.getCorrectAnswers() / totalAnswers;
-            double finalTotalPerformance = truncateDecimal(totalPerformance, 4) * 100;
+            double finalTotalPerformance = calcRate(totalPerformance);
 
             return new ExerciseResponse(
                     exercise.getId(),
@@ -88,62 +95,60 @@ public class ExerciseService {
         repository.save(exercise);
     }
 
-    public RankingExerciseResponse getRanking(String userEmail) {
+    public RateResponse highlightsRate(String userEmail) {
         User user = userService.getUserByEmail(userEmail);
-        List<Exercise> hightPerformance = repository.findHightPerformance(user.getId());
-        List<Exercise> lowPerformance = repository.findLowPerformance(user.getId());
+        List<TopicInfo> topics = repository.getTopicInfo(user.getId());
 
-        if (hightPerformance.isEmpty() && lowPerformance.isEmpty()) {
-            new RankingExerciseResponse( null, null);
+        if (topics.isEmpty()) {
+            return new RateResponse(null, null);
         }
 
-        List<HightPerformanceDto> hightPerformanceList = hightPerformance.
-                stream()
-                .map(exercise -> new HightPerformanceDto(exercise.getSubject().getName(),
-                        exercise.getTopic().getName(),
-                        exercise.getCorrectAnswers()))
-                .toList();
+        TopicInfo maxRateTopic = topics.stream()
+                .max(Comparator.comparingDouble(this::calcTopicRate))
+                .get();
 
-        List<LowPerformanceDto> lowPerformanceList = lowPerformance
-                .stream()
-                .map(exercise -> new LowPerformanceDto(
-                        exercise.getSubject().getName(),
-                        exercise.getTopic().getName(),
-                        exercise.getWrongAnswers()
-                )).toList();
+        TopicInfo minRateTopic = topics.stream()
+                .min(Comparator.comparingDouble(this::calcTopicRate))
+                .get();
 
-       return new RankingExerciseResponse(hightPerformanceList, lowPerformanceList);
+        RateInfo bestRateInfo = createRateInfo(maxRateTopic);
+        RateInfo worstRateInfo = createRateInfo(minRateTopic);
+
+        return new RateResponse(bestRateInfo, worstRateInfo);
     }
 
-    public RankingExerciseResponse getRanking(String userEmail, int limit) {
+    public List<RateInfo> getRanking(String userEmail) {
         User user = userService.getUserByEmail(userEmail);
-        List<Exercise> hightPerformance = repository.findHightPerformance(user.getId(), limit);
-        List<Exercise> lowPerformance = repository.findLowPerformance(user.getId(), limit);
+        List<TopicInfo> topics = repository.getTopicInfo(user.getId());
 
-        if (hightPerformance.isEmpty() && lowPerformance.isEmpty()) {
-            new RankingExerciseResponse( null, null);
+        if (topics.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        List<HightPerformanceDto> hightPerformanceList = hightPerformance.
-                stream()
-                .map(exercise -> new HightPerformanceDto(exercise.getSubject().getName(),
-                        exercise.getTopic().getName(),
-                        exercise.getCorrectAnswers()))
+        List<TopicInfo> topicsSorted = topics.stream()
+                .sorted(Comparator.comparingDouble(this::calcTopicRate).reversed())
                 .toList();
 
-        List<LowPerformanceDto> lowPerformanceList = lowPerformance
-                .stream()
-                .map(exercise -> new LowPerformanceDto(
-                        exercise.getSubject().getName(),
-                        exercise.getTopic().getName(),
-                        exercise.getWrongAnswers()
-                )).toList();
-
-        return new RankingExerciseResponse(hightPerformanceList, lowPerformanceList);
+        return topicsSorted.stream()
+                .map(this::createRateInfo)
+                .toList();
     }
 
-    private double truncateDecimal(double value, int decimalPlaces) {
-        double scale = Math.pow(10, decimalPlaces); // 10^n
-        return Math.floor(value * scale) / scale; // Trunca as casas decimais extras
+    private RateInfo createRateInfo(TopicInfo topicInfo) {
+        Topic topic = topicService.getTopicById(topicInfo.topicId());
+        Subject subject = subjectService.getSubjectById(topic.getSubject().getId());
+        double performance = calcTopicRate(topicInfo);
+        return new RateInfo(subject.getName(), topic.getName(), performance);
+    }
+
+    private double calcRate(double value) {
+        double scale = Math.pow(10, 4);
+        return (Math.floor(value * scale) / scale) / 100;
+    }
+
+    private double calcTopicRate(TopicInfo bestPerformance) {
+        double decimalValue = (double) bestPerformance.correctAnswers() / bestPerformance.total();
+        double scale = Math.pow(10, 4);
+        return (Math.floor(decimalValue * scale) / scale) * 100;
     }
 }

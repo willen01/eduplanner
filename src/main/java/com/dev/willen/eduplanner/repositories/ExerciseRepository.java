@@ -1,5 +1,6 @@
 package com.dev.willen.eduplanner.repositories;
 
+import com.dev.willen.eduplanner.dto.TopicInfo;
 import com.dev.willen.eduplanner.entities.Exercise;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,19 +13,13 @@ import java.util.List;
 public interface ExerciseRepository extends JpaRepository<Exercise, Integer> {
     List<Exercise> findAllByUserId(int userId);
 
-    @Query(value = "select * from tb_exercise where user_id = :userId " +
-            "order by tb_exercise.correct_answers desc", nativeQuery = true)
-    List<Exercise> findHightPerformance(@Param("userId") int userId);
-
-    @Query(value = "select * from tb_exercise where user_id = :userId " +
-            "order by tb_exercise.correct_answers asc", nativeQuery = true)
-    List<Exercise> findLowPerformance(@Param("userId") int userId);
-
-    @Query(value = "select * from tb_exercise where user_id = :userId " +
-            "order by tb_exercise.correct_answers desc limit :limit", nativeQuery = true)
-    List<Exercise> findHightPerformance(@Param("userId") int userId, int limit);
-
-    @Query(value = "select * from tb_exercise where user_id = :userId " +
-            "order by tb_exercise.correct_answers asc limit :limit", nativeQuery = true)
-    List<Exercise> findLowPerformance(@Param("userId") int userId, int limit);
+    @Query(value = "" +
+            "SELECT topic_id, " +
+            "SUM(correct_answers) AS correct_answers, " +
+            "SUM(wrong_answers) AS wrong_answers, " +
+            "SUM(correct_answers + wrong_answers) AS total " +
+            "FROM tb_exercise " +
+            "WHERE user_id = :userId " +
+            "GROUP BY topic_id ", nativeQuery = true)
+    List<TopicInfo> getTopicInfo(@Param("userId") int userId);
 }

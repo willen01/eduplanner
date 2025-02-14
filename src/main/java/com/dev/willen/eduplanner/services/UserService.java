@@ -3,7 +3,7 @@ package com.dev.willen.eduplanner.services;
 import com.dev.willen.eduplanner.dto.CreateUserDto;
 import com.dev.willen.eduplanner.dto.InfoUserResponse;
 import com.dev.willen.eduplanner.dto.LoginDto;
-import com.dev.willen.eduplanner.dto.RankingExerciseResponse;
+import com.dev.willen.eduplanner.dto.RateResponse;
 import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.User;
@@ -109,7 +109,7 @@ public class UserService {
         int globalWrongAnswers =  user.getExercises().stream()
                 .mapToInt(Exercise::getWrongAnswers)
                 .sum();
-        RankingExerciseResponse rankingPerformance = exerciseService.getRanking(userEmail, 1);
+        RateResponse rankingPerformance = exerciseService.highlightsRate(userEmail);
 
         return new InfoUserResponse(globalAnswers, globalCorrectAnswers, globalWrongAnswers, rankingPerformance);
     }

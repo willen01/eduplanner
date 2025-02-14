@@ -55,6 +55,10 @@ public class User {
     @JsonIgnore
     private List<Session> sessions;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Topic> topics;
+
     public User() {
     }
 
