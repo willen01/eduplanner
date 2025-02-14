@@ -42,6 +42,7 @@ public class TopicService {
         Topic topic = new Topic();
         topic.setName(topicDto.name());
         topic.setSubject(subject);
+        topic.setUser(user);
 
         repository.save(topic);
     }

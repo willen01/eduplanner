@@ -48,6 +48,10 @@ public class Topic {
     @JsonIgnore
     private List<Session> sessions;
 
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Topic() {
     }
 
@@ -104,5 +108,13 @@ public class Topic {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
