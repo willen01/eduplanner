@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/topics")
 public class TopicController {
@@ -30,7 +32,14 @@ public class TopicController {
     @GetMapping("/findById/{topicId}")
     public ResponseEntity<TopicResponse> getById(@PathVariable(value = "topicId") int topicId) {
         Topic topic = topicService.getTopicById(topicId);
-        TopicResponse response = new TopicResponse(topic.getName(), topic.getUpdatedAt(), topic.getSubject().getName());
+        TopicResponse response = new TopicResponse(topic.getId(), topic.getName(), topic.getSubject().getName(),
+                topic.getCreatedAt());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TopicResponse>> getAllTopics(@AuthenticationPrincipal UserDetails userDetails) {
+        List<TopicResponse> response = topicService.getAllTopics(userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

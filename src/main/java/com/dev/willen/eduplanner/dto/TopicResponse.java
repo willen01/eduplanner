@@ -2,5 +2,5 @@ package com.dev.willen.eduplanner.dto;
 
 import java.util.Date;
 
-public record TopicResponse(String name, Date createdAt, String subjectName) {
+public record TopicResponse(int id, String name, String subject, Date createdAt) {
 }

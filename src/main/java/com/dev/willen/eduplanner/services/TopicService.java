@@ -1,6 +1,7 @@
 package com.dev.willen.eduplanner.services;
 
 import com.dev.willen.eduplanner.dto.SaveTopicDto;
+import com.dev.willen.eduplanner.dto.TopicResponse;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Topic;
 import com.dev.willen.eduplanner.entities.User;
@@ -9,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class TopicService {
@@ -51,6 +54,17 @@ public class TopicService {
         return repository.findById(topicId).orElseThrow(() -> {
             throw new EntityNotFoundException("Topic not found");
         });
+    }
+
+    public List<TopicResponse> getAllTopics(String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
+        List<Topic> topics = repository.findAllByUserId(user.getId());
+
+        return topics.stream()
+                .map(topic ->
+                        new TopicResponse(topic.getId(), topic.getName(),
+                                topic.getSubject().getName(), topic.getCreatedAt()))
+                .toList();
     }
 
     public void removeTopic(int topicId) {
