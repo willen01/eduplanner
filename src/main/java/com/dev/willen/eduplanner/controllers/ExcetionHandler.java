@@ -1,6 +1,7 @@
 package com.dev.willen.eduplanner.controllers;
 
 import com.dev.willen.eduplanner.erros.StandardError;
+import com.dev.willen.eduplanner.exceptions.EmailAlreadyRegisteredException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,12 @@ public class ExcetionHandler {
         StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(),request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity<StandardError> emailException(EmailAlreadyRegisteredException ex, HttpServletRequest request) {
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.CONFLICT.value(), ex.getMessage(),request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }

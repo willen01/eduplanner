@@ -5,7 +5,7 @@ import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.enums.Role;
-import com.dev.willen.eduplanner.exceptions.DuplicatedUser;
+import com.dev.willen.eduplanner.exceptions.EmailAlreadyRegisteredException;
 import com.dev.willen.eduplanner.exceptions.UserNotFoundException;
 import com.dev.willen.eduplanner.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +47,7 @@ public class UserService {
 
     public void registerUser(CreateUserDto userDto) {
         repository.findByEmail(userDto.email()).ifPresent(err -> {
-            throw new DuplicatedUser("User already registered!");
+            throw new EmailAlreadyRegisteredException("User already registered!");
         });
 
         User userEntity = new User();
@@ -107,7 +107,6 @@ public class UserService {
     public User getUserByEmail(String userEmail) {
         return repository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
     }
-
 
     public InfoUserResponse infoUser(String userEmail) {
         User user = getUserByEmail(userEmail);
