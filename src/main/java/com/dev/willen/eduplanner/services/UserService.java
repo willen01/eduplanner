@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -76,12 +77,17 @@ public class UserService {
     }
 
     public void updatePassword(String userEmail, UpdatePasswordDto passwordData) {
-       if (!passwordData.password().equals(passwordData.confirmPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password and confirmPassword not match!");
-       }
-
         User user = getUserByEmail(userEmail);
-        user.setPassword(passwordEncoder.encode(passwordData.password()));
+
+        if (!passwordEncoder.matches(passwordData.actualPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        if (!passwordData.newPassword().equals(passwordData.confirmNewPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password and confirmPassword not match!");
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordData.newPassword()));
         repository.save(user);
     }
 
@@ -115,7 +121,7 @@ public class UserService {
                 .mapToInt(Exercise::getCorrectAnswers)
                 .sum();
 
-        int globalWrongAnswers =  user.getExercises().stream()
+        int globalWrongAnswers = user.getExercises().stream()
                 .mapToInt(Exercise::getWrongAnswers)
                 .sum();
         RateResponse rankingPerformance = exerciseService.highlightsRate(userEmail);
