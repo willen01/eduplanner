@@ -3,6 +3,7 @@ package com.dev.willen.eduplanner.controllers;
 import com.dev.willen.eduplanner.dto.CreateUserDto;
 import com.dev.willen.eduplanner.dto.InfoUserResponse;
 import com.dev.willen.eduplanner.dto.LoginDto;
+import com.dev.willen.eduplanner.dto.UpdatePasswordDto;
 import com.dev.willen.eduplanner.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,13 @@ public class UserController {
         String response = userService.signIn(userRequest);
         return ResponseEntity.status(HttpStatus.OK).header("toke_response", response)
                 .build();
+    }
+
+    @PostMapping("/updatePass")
+    public ResponseEntity<Void> updatePass(@AuthenticationPrincipal UserDetails userDetails,
+                                           @RequestBody UpdatePasswordDto request) {
+        userService.updatePassword(userDetails.getUsername(), request);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/info")

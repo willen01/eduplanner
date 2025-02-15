@@ -1,9 +1,6 @@
 package com.dev.willen.eduplanner.services;
 
-import com.dev.willen.eduplanner.dto.CreateUserDto;
-import com.dev.willen.eduplanner.dto.InfoUserResponse;
-import com.dev.willen.eduplanner.dto.LoginDto;
-import com.dev.willen.eduplanner.dto.RateResponse;
+import com.dev.willen.eduplanner.dto.*;
 import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.User;
@@ -15,11 +12,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -74,6 +73,16 @@ public class UserService {
         }
 
         return jwt;
+    }
+
+    public void updatePassword(String userEmail, UpdatePasswordDto passwordData) {
+       if (!passwordData.password().equals(passwordData.confirmPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password and confirmPassword not match!");
+       }
+
+        User user = getUserByEmail(userEmail);
+        user.setPassword(passwordEncoder.encode(passwordData.password()));
+        repository.save(user);
     }
 
     private String generateToken(Authentication authentication) {
