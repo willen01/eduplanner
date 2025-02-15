@@ -2,6 +2,9 @@ package com.dev.willen.eduplanner.config;
 
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class EduPlannerUserDetailsService implements UserDetailsService {
 
     private final UserRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(EduPlannerUserDetailsService.class);
 
     public EduPlannerUserDetailsService(UserRepository repository) {
         this.repository = repository;
@@ -24,7 +28,11 @@ public class EduPlannerUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário ou senha inválido, tente novamente!"));
+                .orElseThrow(() -> {
+                            logger.error("User with email: {} not found", username);
+                            throw new BadCredentialsException("User or password incorrect, try again!");
+                        }
+                );
 
         List<GrantedAuthority> authorities = user.getAuthorities()
                 .stream()
