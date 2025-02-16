@@ -106,18 +106,22 @@ public class ExerciseService {
             return new RateResponse(null, null);
         }
 
-        TopicInfo maxRateTopic = topics.stream()
-                .max(Comparator.comparingDouble(this::calcTopicRate))
-                .get();
+        if(topics.size() > 1) {
+            TopicInfo maxRateTopic = topics.stream()
+                    .max(Comparator.comparingDouble(this::calcTopicRate))
+                    .get();
 
-        TopicInfo minRateTopic = topics.stream()
-                .min(Comparator.comparingDouble(this::calcTopicRate))
-                .get();
+            TopicInfo minRateTopic = topics.stream()
+                    .min(Comparator.comparingDouble(this::calcTopicRate))
+                    .get();
 
-        RateInfo bestRateInfo = createRateInfo(maxRateTopic);
-        RateInfo worstRateInfo = createRateInfo(minRateTopic);
+            RateInfo bestRateInfo = createRateInfo(maxRateTopic);
+            RateInfo worstRateInfo = createRateInfo(minRateTopic);
 
-        return new RateResponse(bestRateInfo, worstRateInfo);
+            return new RateResponse(bestRateInfo, worstRateInfo);
+        } else {
+            return new RateResponse(null, null);
+        }
     }
 
     public List<RateInfo> getRanking(String userEmail) {
