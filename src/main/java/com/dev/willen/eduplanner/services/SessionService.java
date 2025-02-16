@@ -1,6 +1,7 @@
 package com.dev.willen.eduplanner.services;
 
 import com.dev.willen.eduplanner.dto.SaveSessionDto;
+import com.dev.willen.eduplanner.dto.SessionInfo;
 import com.dev.willen.eduplanner.entities.Subject;
 import com.dev.willen.eduplanner.entities.Session;
 import com.dev.willen.eduplanner.entities.Topic;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class SessionService {
@@ -45,5 +47,9 @@ public class SessionService {
         session.setTopic(topic);
 
         repository.save(session);
+    }
+
+    public List<SessionInfo> getAllSessions(String userEmail) {
+        return repository.findSessionInfoByUserEmail(userEmail);
     }
 }
