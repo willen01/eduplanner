@@ -34,7 +34,7 @@ public class UserController {
     @PostMapping("/signIn")
     public ResponseEntity<Void> signIn(@RequestBody LoginDto userRequest) {
         String response = userService.signIn(userRequest);
-        return ResponseEntity.status(HttpStatus.OK).header("toke_response", response)
+        return ResponseEntity.status(HttpStatus.OK).header("token_response", response)
                 .build();
     }
 
