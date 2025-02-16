@@ -14,9 +14,12 @@ import com.dev.willen.eduplanner.repositories.ExerciseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ExerciseService {
@@ -142,13 +145,14 @@ public class ExerciseService {
     }
 
     private double calcRate(double value) {
-        double scale = Math.pow(10, 4);
-        return (Math.floor(value * scale) / scale) / 100;
+        double result = value * 100;
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.##", symbols);
+        return Double.parseDouble(df.format(result));
     }
 
     private double calcTopicRate(TopicInfo bestPerformance) {
         double decimalValue = (double) bestPerformance.correctAnswers() / bestPerformance.total();
-        double scale = Math.pow(10, 4);
-        return (Math.floor(decimalValue * scale) / scale) * 100;
+        return calcRate(decimalValue);
     }
 }
