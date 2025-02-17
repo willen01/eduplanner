@@ -7,7 +7,10 @@ import com.dev.willen.eduplanner.entities.Session;
 import com.dev.willen.eduplanner.entities.Topic;
 import com.dev.willen.eduplanner.entities.User;
 import com.dev.willen.eduplanner.repositories.SessionRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -47,6 +50,19 @@ public class SessionService {
         session.setTopic(topic);
 
         repository.save(session);
+    }
+
+    public void removeSession(String userEmail, int sessionId) {
+        User user = userService.getUserByEmail(userEmail);
+        Session session = repository.findById(sessionId).orElseThrow(() -> {
+            throw new EntityNotFoundException("Session with id " + sessionId + " not found");
+        });
+
+        if (!Integer.valueOf(user.getId()).equals(session.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have permission to perform this operation");
+        }
+
+        repository.deleteById(sessionId);
     }
 
     public List<SessionInfo> getAllSessions(String userEmail) {
