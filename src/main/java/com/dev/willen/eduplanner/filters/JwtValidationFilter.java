@@ -33,13 +33,15 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader("JWT_TOKEN");
-        if (jwt != null) {
+        String jwt;
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
                 Environment env = getEnvironment();
                 String secret = env.getProperty("JWT_SECRET_KEY", "");
                 SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
                 if (secretKey != null) {
+                    jwt = authHeader.substring(7);
                     Claims claims = Jwts.parser().verifyWith(secretKey)
                             .build().parseSignedClaims(jwt).getPayload();
 
