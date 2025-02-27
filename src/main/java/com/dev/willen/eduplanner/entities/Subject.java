@@ -20,7 +20,7 @@ import java.util.Set;
 @Table(name = "tb_subject")
 public class Subject {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String name;
