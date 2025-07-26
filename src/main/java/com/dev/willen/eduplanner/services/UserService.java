@@ -1,6 +1,10 @@
 package com.dev.willen.eduplanner.services;
 
-import com.dev.willen.eduplanner.dto.*;
+import com.dev.willen.eduplanner.dto.CreateUserDto;
+import com.dev.willen.eduplanner.dto.InfoUserResponse;
+import com.dev.willen.eduplanner.dto.LoginDto;
+import com.dev.willen.eduplanner.dto.RateResponse;
+import com.dev.willen.eduplanner.dto.UpdatePasswordDto;
 import com.dev.willen.eduplanner.entities.Authority;
 import com.dev.willen.eduplanner.entities.Exercise;
 import com.dev.willen.eduplanner.entities.User;
@@ -95,7 +99,7 @@ public class UserService {
         String secret = JWT_SECRET;
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
-                .issuer("Eazy Bank")
+                .issuer("Eduplanner")
                 .subject("JWT token")
                 .claim("username", authentication.getName())
                 .issuedAt(new Date())
